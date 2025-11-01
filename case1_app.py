@@ -13,14 +13,9 @@ def select_file():
         title="Select FASTA file",
         filetypes=(("FASTA files", "*.fasta *.fa *.fna"), ("All files", "*.*"))
     )
-    messagebox.showinfo("Info", f"fasta file: {fasta_path}")
 
 def load_fasta_to_df():
-    if not fasta_path:
-        return None
     records = list(SeqIO.parse(fasta_path, "fasta"))
-    if not records:
-        return None
     return pd.DataFrame({
         "id": [r.id for r in records],
         "description": [r.description for r in records],
@@ -47,7 +42,6 @@ def add_to_store(motif: str, results: list[dict]):
         if key not in results_store:
             results_store[key] = {"positions": r["positions"], "length": r["length"]}
 
-# Buttons
 def on_search_click():
     df = load_fasta_to_df()
     if df is None:
@@ -126,24 +120,19 @@ def on_save_click():
         })
     pd.DataFrame(rows).to_csv(save_path, index=False, encoding="utf-8")
 
-# GUI
-
 root = tk.Tk()
 root.title("DNA Motif Analysis")
 root.geometry("520x420")
 
-# file picker
 btn_load = ttk.Button(root, text="Load FASTA file", command=select_file)
 btn_load.pack(pady=6)
 
-# search (popup, no plot)
 entry_search_motif = ttk.Entry(root, width=60)
 entry_search_motif.pack(pady=3)
 entry_search_motif.insert(0, "TATA")
 btn_search = ttk.Button(root, text="Search (all genes)", command=on_search_click)
 btn_search.pack(pady=4)
 
-# plot (draw all genes, different colors)
 lbl_plot = ttk.Label(root, text="Motif to plot:")
 lbl_plot.pack(pady=(10, 2))
 entry_plot_motif = ttk.Entry(root, width=60)
@@ -152,7 +141,6 @@ entry_plot_motif.insert(0, "TATA")
 btn_plot = ttk.Button(root, text="Plot (all genes)", command=on_plot_click)
 btn_plot.pack(pady=8)
 
-# save CSV
 btn_save = ttk.Button(root, text="Save results to CSV", command=on_save_click)
 btn_save.pack(side="bottom", pady=12)
 
